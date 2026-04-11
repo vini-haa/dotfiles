@@ -1,0 +1,9 @@
+[sqlfluff]
+dialect = postgres
+
+[sqlfluff:indentation]
+indent_unit = space
+tab_space_size = 4
+
+[sqlfluff:layout:type:comma]
+line_position = trailing

@@ -1,0 +1,7 @@
+# Dotfiles
+export DOTFILES_DIR="$HOME/dotfiles"
+
+# Aliases úteis
+alias dotfiles-update='git -C "$DOTFILES_DIR" pull && echo "✅ dotfiles atualizados"'
+alias dotfiles-status='git -C "$DOTFILES_DIR" status'
+alias lint-check='bash "$DOTFILES_DIR/scripts/check_deps.sh"'

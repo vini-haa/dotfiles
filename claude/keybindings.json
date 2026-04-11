@@ -1,0 +1,46 @@
+{
+  "bindings": [
+    {
+      "keys": "ctrl+k ctrl+r",
+      "action": "run-skill",
+      "args": "review",
+      "context": "input"
+    },
+    {
+      "keys": "ctrl+k ctrl+t",
+      "action": "run-skill",
+      "args": "test",
+      "context": "input"
+    },
+    {
+      "keys": "ctrl+k ctrl+s",
+      "action": "run-skill",
+      "args": "ship",
+      "context": "input"
+    },
+    {
+      "keys": "ctrl+k ctrl+d",
+      "action": "run-skill",
+      "args": "debug",
+      "context": "input"
+    },
+    {
+      "keys": "ctrl+k ctrl+e",
+      "action": "run-skill",
+      "args": "explore",
+      "context": "input"
+    },
+    {
+      "keys": "ctrl+k ctrl+p",
+      "action": "run-skill",
+      "args": "perf",
+      "context": "input"
+    },
+    {
+      "keys": "ctrl+k ctrl+b",
+      "action": "run-skill",
+      "args": "brainstorm",
+      "context": "input"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+# Test and temporary files
+*.bin.npz
+*.npy
+*.zip
+HANDOFF*.md
+.claude/
+__pycache__/
+*.pyc
+.DS_Store
+*.tmp
+node_modules/
+
+# Caches
+.ruff_cache/
+
+# IDE and editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+
+# Local env overrides
+.env
+.env.local
