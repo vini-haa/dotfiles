@@ -24,15 +24,17 @@ This repository solves that with three layers:
 | | This project | claude-mem |
 |---|---|---|
 | **Storage** | Git repo (markdown + numpy vectors) | SQLite + Chroma |
-| **Cross-machine sync** | `git push/pull` | Manual export/import |
+| **Cross-machine sync** | `git push/pull` | Manual file copy |
 | **Embeddings cost** | Free (sentence-transformers, local) | Free (ChromaDB ONNX) |
 | **Memory compression** | None (verbatim) | AI-powered via agent-sdk |
-| **Integration** | Dotfiles (hooks, agents, skills, rules) | Plugin (hooks only) |
+| **Deduplication** | Cosine similarity (roadmap) | AI-powered write-time dedup |
+| **Search** | Vector (semantic) | Vector + FTS5 (semantic + exact) |
+| **Integration** | Dotfiles (hooks, agents, skills, rules) | Plugin (5 lifecycle hooks) |
 | **Setup** | `git clone` + `bash install.sh` | `npm install -g claude-mem` |
 
 **Pick this if:** you want git-syncable memory across machines with a full dotfiles setup (agents, skills, rules, lint hooks).
 
-**Pick claude-mem if:** you want a polished plugin with AI-powered compression and a large community (46K stars).
+**Pick claude-mem if:** you want a polished plugin with AI-powered compression, dedup, and a large community (46K stars).
 
 ---
 
