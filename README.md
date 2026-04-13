@@ -82,6 +82,9 @@ NEW MACHINE
 - Python 3.9+
 - Git configured
 - Node.js 18+ (optional, for ruah)
+- `gh` CLI (optional, for step 2 of memory setup)
+
+> **Note:** sentence-transformers pulls PyTorch as a dependency (~2GB download on first install). On slow connections, this can take several minutes. The char-trigram fallback activates automatically if install fails.
 
 ### New machine setup (~5 minutes)
 
