@@ -126,6 +126,16 @@
         ]
       }
     ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'MEMORY_BRIDGE=\"$HOME/dotfiles/scripts/memory_bridge.py\"; if [ -f \"$MEMORY_BRIDGE\" ]; then python3 \"$MEMORY_BRIDGE\" store --text \"Session compacted in $(basename $PWD). Branch: $(git branch --show-current 2>/dev/null). Recent files: $(git diff --name-only 2>/dev/null | head -5 | tr \"\\n\" \",\")\" --tags \"session,postcompact\" --project \"$(basename $PWD)\" --quiet 2>/dev/null; fi'"
+          }
+        ]
+      }
+    ],
     "UserPromptSubmit": [
       {
         "hooks": [
