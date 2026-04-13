@@ -15,7 +15,7 @@ This repository solves that with three layers:
 
 1. **Persistent semantic memory** — a private git repo (`~/memory/`) with vector embeddings that sync across machines
 2. **Automatic hooks** — inject context on open, save context on close, protect sensitive files, run linters
-3. **Agents + skills + rules** — 8 specialized agents, 20 workflow skills, and 6 per-language rule sets
+3. **Agents + skills + rules** — 7 specialized agents, 20 workflow skills, and 6 per-language rule sets
 
 ---
 
@@ -388,6 +388,9 @@ export GITHUB_TOKEN='ghp_your_token_here'
 | `Ctrl+K, Ctrl+T` | /test |
 | `Ctrl+K, Ctrl+S` | /ship |
 | `Ctrl+K, Ctrl+D` | /debug |
+| `Ctrl+K, Ctrl+E` | /explore |
+| `Ctrl+K, Ctrl+P` | /perf |
+| `Ctrl+K, Ctrl+B` | /brainstorm |
 
 ---
 
