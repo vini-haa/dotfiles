@@ -306,6 +306,7 @@ Use agents to delegate tasks with specialized context:
 | **Secret scanner** | PostToolUse (Write/Edit) | Detects leaked credentials in code |
 | **Memory: injection** | SessionStart | Queries `memory_bridge.py` and injects project context |
 | **Memory: capture** | PreCompact | Saves session context before compacting |
+| **Memory: preserve** | PostCompact | Saves branch, modified files and project to memory after compaction |
 | **Memory: sync** | Stop | Auto-commits `~/memory/` |
 | **Rule reinforcement** | UserPromptSubmit | Re-injects critical rules every N prompts |
 | **Pending items** | Stop | Detects TODO/FIXME and asks if you want to continue |
