@@ -148,6 +148,11 @@
           {
             "type": "command",
             "command": "bash -c 'MEMORY_DIR=\"$HOME/memory\"; if [ -d \"$MEMORY_DIR/.git\" ]; then cd \"$MEMORY_DIR\" && git add -A && git diff --cached --quiet || git commit -m \"session-end: $(date +%Y-%m-%d-%H%M) $(basename $OLDPWD)\" --quiet 2>/dev/null; fi'"
+          },
+          {
+            "type": "prompt",
+            "prompt": "Verifique se todas as tarefas solicitadas foram completadas. Cheque: (1) sem erros de lint pendentes, (2) sem TODOs deixados sem resolver, (3) o que foi pedido foi realmente entregue. Se qualquer item falhar, continue trabalhando. IMPORTANTE: se stop_hook_active for true, não force continuação — aceite o stop.",
+            "model": "haiku"
           }
         ]
       }
