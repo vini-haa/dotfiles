@@ -1,0 +1,33 @@
+# Build artifacts
+dist/
+build/
+.next/
+out/
+__pycache__/
+*.pyc
+
+# Dependencies
+node_modules/
+.venv/
+venv/
+
+# Lock files (large, no analysis value)
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+poetry.lock
+uv.lock
+Pipfile.lock
+
+# Generated / minified
+*.min.js
+*.min.css
+*.map
+coverage/
+.nyc_output/
+
+# Large binaries
+*.wasm
+*.so
+*.dll
+*.dylib

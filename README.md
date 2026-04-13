@@ -131,6 +131,14 @@ python3 ~/dotfiles/scripts/memory_bridge.py status
 python3 ~/dotfiles/scripts/memory_bridge.py query --text "my profile" --top-k 3
 ```
 
+### Reduce token usage in your projects
+
+Copy the `.claudeignore` template to any project to prevent Claude from reading build artifacts, lock files, and binaries — saves 10-50K tokens per session:
+
+```bash
+cp ~/dotfiles/config/.claudeignore ~/my-project/.claudeignore
+```
+
 ### Update an existing machine
 
 ```bash
