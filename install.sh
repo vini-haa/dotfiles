@@ -223,7 +223,7 @@ echo "  • 5 hooks            — lint, bash security, secret scan, session sta
 echo "  • 7 agents           — frontend, backend, database, architect, devops, security, company-context"
 echo "  • 20 skills          — /review, /ship, /refactor, /test, /debug, /handoff, /boot, /sync-memory e mais 12"
 echo "  • 6 rules            — python, typescript, go, sql, security, testing"
-echo "  • memory_bridge.py   — memória semântica numpy + ONNX (MiniLM-L6-v2)"
+echo "  • memory_bridge.py   — memória semântica sentence-transformers + numpy (MiniLM-L6-v2)"
 echo "  • ruah_bridge.sh     — integração com sessões paralelas"
 echo ""
 echo "⚠️  Configure GITHUB_TOKEN para o MCP GitHub funcionar:"

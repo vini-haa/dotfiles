@@ -84,7 +84,7 @@ warnings.filterwarnings("ignore", message=".*UNEXPECTED.*")
 EMBEDDING_DIM = 384  # all-MiniLM-L6-v2 dimension
 
 # ---------------------------------------------------------------------------
-# Embedding functions (ONNX > char-trigram fallback)
+# Embedding functions (sentence-transformers > char-trigram fallback)
 # ---------------------------------------------------------------------------
 
 _embedder = None
