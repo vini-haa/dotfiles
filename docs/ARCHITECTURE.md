@@ -33,8 +33,8 @@ persistente entre sessões e máquinas.
 │  └──────┬────────────────┬─────────────────┬───────────────┘ │
 │         │                │                 │                 │
 │  ┌──────▼──────┐  ┌──────▼──────┐  ┌───────▼─────────────┐  │
-│  │ numpy+ONNX  │  │ ~/memory/   │  │ Obsidian (opcional)  │  │
-│  │ (vetores)   │  │ (git repo)  │  │                      │  │
+│  │ sent-trans  │  │ ~/memory/   │  │ Obsidian (opcional)  │  │
+│  │ + numpy     │  │ (git repo)  │  │                      │  │
 │  │ index.json  │  │ projetos/   │  │ vault/claude-memory/ │  │
 │  │ vectors.npy │  │ session/    │  │                      │  │
 │  └─────────────┘  │ global/     │  └──────────────────────┘  │
@@ -84,7 +84,7 @@ persistente entre sessões e máquinas.
 
 | Decisão | Alternativas | Justificativa |
 |---------|-------------|---------------|
-| numpy + ONNX (MiniLM-L6-v2) como vector store | ChromaDB, mempalace, qdrant | Formato git-syncable (index.json + vectors.npy), sem SQLite binário, embeddings locais |
+| sentence-transformers + numpy como vector store | ChromaDB, mempalace, qdrant | Formato git-syncable (index.json + vectors.npy), sem SQLite binário, embeddings locais |
 | turboquant-vectors (opcional) | turboquant-py, numpy | Funciona no Python 3.14, 4-8x compressão para export |
 | ruah para coordenação | git worktree manual | CLI pronta com file claiming e DAG de merge |
 | ~/memory/ como git repo | banco local, cloud | Portável, versionado, push/pull simples |
