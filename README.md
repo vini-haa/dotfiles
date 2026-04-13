@@ -114,7 +114,13 @@ gh repo create memory --private --description "Persistent memory — Claude Code
 
 ```bash
 cd ~/memory
+
+# SSH (if you have SSH keys configured)
 git remote add origin git@github.com:YOUR_USERNAME/memory
+
+# HTTPS (if you don't have SSH keys)
+git remote add origin https://github.com/YOUR_USERNAME/memory
+
 git push -u origin main
 ```
 
