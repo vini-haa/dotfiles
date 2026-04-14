@@ -186,6 +186,14 @@ python3 ~/dotfiles/scripts/memory_bridge.py query \
   --top-k 5
 # → [0.4058] (my-project) This API uses JWT auth with refresh tokens
 
+# Progressive disclosure — pick the right level of detail per use case
+python3 ~/dotfiles/scripts/memory_bridge.py query \
+  --text "auth" --detail compact   # ~150 chars (default, used by SessionStart hook)
+python3 ~/dotfiles/scripts/memory_bridge.py query \
+  --text "auth" --detail section   # ~500 chars (the indexed text)
+python3 ~/dotfiles/scripts/memory_bridge.py query \
+  --text "auth" --detail full      # full .md file from disk (used by /handoff)
+
 # System status
 python3 ~/dotfiles/scripts/memory_bridge.py status
 # → ✓ Index: 5 memories (model: sentence-transformers)

@@ -140,6 +140,35 @@ def test_no_dedup_flag_creates_new_entry(tmp_memory):
     assert id_a != id_b, "com dedup=False, IDs devem ser diferentes"
 
 
+def test_progressive_disclosure_detail_levels(tmp_memory):
+    """--detail compact/section/full devem retornar tamanhos crescentes."""
+    long_text = "A" * 50 + " " + "B" * 200 + " " + "C" * 500 + " end"
+
+    memory_bridge.store_memory(
+        text=long_text,
+        tags="detail",
+        project="detail-test",
+        quiet=True,
+        dedup=False,
+    )
+
+    compact = memory_bridge.query_memory(
+        text="A B C", top_k=1, project="detail-test", fmt="json", detail="compact"
+    )
+    section = memory_bridge.query_memory(
+        text="A B C", top_k=1, project="detail-test", fmt="json", detail="section"
+    )
+    full = memory_bridge.query_memory(
+        text="A B C", top_k=1, project="detail-test", fmt="json", detail="full"
+    )
+
+    assert len(compact[0]["text"]) <= 150, "compact deve ter <=150 chars"
+    assert len(section[0]["text"]) <= 500, "section deve ter <=500 chars"
+    assert len(full[0]["text"]) >= len(section[0]["text"]), (
+        "full deve ser >= section (le do disco)"
+    )
+
+
 def test_status_returns_count(tmp_memory, capsys):
     memory_bridge.store_memory(
         text="Test memory for status",

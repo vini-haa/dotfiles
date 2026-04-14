@@ -426,10 +426,56 @@ def store_memory(
 # ---------------------------------------------------------------------------
 
 
+DETAIL_COMPACT_CHARS = 150
+DETAIL_SECTION_CHARS = 500
+
+
+def _resolve_text_by_detail(entry: dict, detail: str) -> str:
+    """Retorna o texto da entrada conforme o nivel de detalhe.
+
+    - compact: primeiros 150 chars (minimo de tokens, ideal para SessionStart).
+    - section: ate 500 chars (texto armazenado no indice).
+    - full:    le o arquivo .md em disco, fallback para texto do indice.
+    """
+    text = entry.get("text", "")
+
+    if detail == "compact":
+        return text[:DETAIL_COMPACT_CHARS]
+    if detail == "section":
+        return text[:DETAIL_SECTION_CHARS]
+
+    # full: tenta ler do disco
+    project = entry.get("project", "global")
+    mem_id = entry.get("id", "")
+    md_path = MEMORY_DIR / "projects" / project / f"{mem_id}.md"
+    if md_path.exists():
+        content = md_path.read_text(encoding="utf-8", errors="replace")
+        # Remove frontmatter se presente
+        if content.startswith("---"):
+            parts = content.split("---", 2)
+            if len(parts) >= 3:
+                return parts[2].strip()
+        return content
+
+    return text
+
+
 def query_memory(
-    text: str, top_k: int = 8, project: str | None = None, fmt: str = "plain"
+    text: str,
+    top_k: int = 8,
+    project: str | None = None,
+    fmt: str = "plain",
+    detail: str = "compact",
 ) -> list[dict]:
-    """Busca memorias semanticamente similares."""
+    """Busca memorias semanticamente similares.
+
+    Args:
+        text: texto da query.
+        top_k: numero maximo de resultados.
+        project: filtra por projeto (None = todos).
+        fmt: plain | markdown | json.
+        detail: compact (150 chars) | section (500 chars) | full (arquivo completo).
+    """
     index = _load_index()
     if not index["entries"]:
         if fmt == "json":
@@ -447,7 +493,7 @@ def query_memory(
         results.append(
             {
                 "id": entry["id"],
-                "text": entry["text"],
+                "text": _resolve_text_by_detail(entry, detail),
                 "score": round(score, 4),
                 "project": entry.get("project", ""),
                 "tags": entry.get("tags", ""),
@@ -464,14 +510,14 @@ def query_memory(
         else:
             for r in results:
                 print(f"### [{r['score']}] {r['project']} — {r['tags']}")
-                print(f"> {r['text'][:200]}")
+                print(f"> {r['text']}")
                 print()
     else:  # plain
         if not results:
             print("Nenhum resultado encontrado.")
         else:
             for r in results:
-                print(f"[{r['score']}] ({r['project']}) {r['text'][:150]}")
+                print(f"[{r['score']}] ({r['project']}) {r['text']}")
 
     return results
 
@@ -745,6 +791,12 @@ def main() -> None:
     p_query.add_argument(
         "--format", dest="fmt", default="plain", choices=["plain", "markdown", "json"]
     )
+    p_query.add_argument(
+        "--detail",
+        default="compact",
+        choices=["compact", "section", "full"],
+        help="Nível de detalhe: compact (~150 chars), section (500 chars), full (texto completo do .md)",
+    )
 
     # rebuild
     p_rebuild = subparsers.add_parser("rebuild", help="Reconstroi índice de embeddings")
@@ -771,7 +823,13 @@ def main() -> None:
             args.text, args.tags, args.project, quiet=args.quiet, dedup=args.dedup
         )
     elif args.command == "query":
-        query_memory(args.text, args.top_k, args.project, fmt=args.fmt)
+        query_memory(
+            args.text,
+            args.top_k,
+            args.project,
+            fmt=args.fmt,
+            detail=args.detail,
+        )
     elif args.command == "rebuild":
         rebuild_index(incremental=args.incremental)
     elif args.command == "sync":

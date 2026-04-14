@@ -89,4 +89,14 @@ python3 ~/dotfiles/scripts/memory_bridge.py store \
     --project "$(basename $PWD)"
 ```
 
+Para recuperar o handoff completo em uma nova sessão (com texto integral, não só resumo):
+
+```bash
+python3 ~/dotfiles/scripts/memory_bridge.py query \
+    --text "handoff $(basename $PWD)" \
+    --top-k 1 \
+    --project "$(basename $PWD)" \
+    --detail full
+```
+
 Confirme: "✓ Sessão persistida na memória semântica"
