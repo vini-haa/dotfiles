@@ -409,11 +409,23 @@ Severity hierarchy:
 
 ## MCP Servers
 
-Pre-configured with GitHub MCP. To activate:
+Pre-configured servers in `claude/.mcp.json`:
+
+| Server | Purpose | Requires |
+|--------|---------|----------|
+| `github` | Issues, PRs, repo operations | `GITHUB_TOKEN` env var |
+| `filesystem` | Scoped read access to `~/projects` | — |
+| `postgres` | Basic Postgres queries | `DATABASE_URL` env var |
+| `gopls` | Go code intelligence (navigation, type info, refactoring via LSP) | `gopls` installed locally |
+
+Activate optional servers by exporting env vars:
 
 ```bash
 export GITHUB_TOKEN='ghp_your_token_here'
+export DATABASE_URL='postgres://user:pass@host:port/db'
 ```
+
+The `gopls` server runs locally and requires `gopls` from the Go toolchain (`go install golang.org/x/tools/gopls@latest`).
 
 ---
 
