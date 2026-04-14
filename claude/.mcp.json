@@ -36,6 +36,14 @@
       "type": "stdio",
       "command": "gopls",
       "args": ["mcp", "serve"]
+    },
+    "postgres-pro": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@crystaldba/postgres-mcp"],
+      "env": {
+        "DATABASE_URL": "${DATABASE_URL}"
+      }
     }
   }
 }

@@ -416,6 +416,7 @@ Pre-configured servers in `claude/.mcp.json`:
 | `github` | Issues, PRs, repo operations | `GITHUB_TOKEN` env var |
 | `filesystem` | Scoped read access to `~/projects` | — |
 | `postgres` | Basic Postgres queries | `DATABASE_URL` env var |
+| `postgres-pro` | Advanced Postgres: index analysis, query plans, safe read-only ops | `DATABASE_URL` env var |
 | `gopls` | Go code intelligence (navigation, type info, refactoring via LSP) | `gopls` installed locally |
 
 Activate optional servers by exporting env vars:
