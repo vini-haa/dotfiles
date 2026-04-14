@@ -25,10 +25,21 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-# Fix Windows encoding for UTF-8 output
-if sys.platform == "win32":
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+
+def _fix_windows_utf8_streams() -> None:
+    """Ajusta stdout/stderr para UTF-8 no Windows.
+
+    Chamado apenas pela CLI (main), nunca no import — isso quebra pytest
+    capture e qualquer outro consumidor que substitua os streams.
+    """
+    if sys.platform == "win32":
+        sys.stdout = io.TextIOWrapper(
+            sys.stdout.buffer, encoding="utf-8", errors="replace"
+        )
+        sys.stderr = io.TextIOWrapper(
+            sys.stderr.buffer, encoding="utf-8", errors="replace"
+        )
+
 
 # ---------------------------------------------------------------------------
 # Configuracao
@@ -620,6 +631,8 @@ def print_status() -> None:
 
 
 def main() -> None:
+    _fix_windows_utf8_streams()
+
     parser = argparse.ArgumentParser(
         description="Memory Bridge — memória semântica para Claude Code"
     )
