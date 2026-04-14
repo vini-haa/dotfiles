@@ -407,6 +407,42 @@ Severity hierarchy:
 
 ---
 
+## Token optimization tips
+
+### Environment variables (session-wide)
+
+```bash
+# For simple implementation sessions (~70% savings on thinking tokens)
+export CLAUDE_CODE_MAX_THINKING_TOKENS=10000
+
+# For architecture / debug sessions (max quality)
+unset CLAUDE_CODE_MAX_THINKING_TOKENS
+```
+
+Default is 31999 thinking tokens per turn. Cutting to 10K sacrifices reasoning depth — use only when the task is straightforward.
+
+### Effort levels per task (inside Claude Code)
+
+```
+/effort medium   → day-to-day coding (default)
+/effort high     → /review, /debug with subtle bugs
+/effort max      → /architect, critical trade-off decisions
+```
+
+### Project-level token savings
+
+Copy `config/.claudeignore` to any repo to skip build artifacts, lock files, and binaries. Saves 10-50K tokens per session depending on project size.
+
+### Model selection rule of thumb
+
+- **Haiku** — file reads, greps, simple subagent tasks (~80% cheaper than Sonnet)
+- **Sonnet** — everything else, 80% of daily work (default)
+- **Opus** — architecture reviews, multi-step debugging, subtle trade-offs
+
+Your agents already declare their preferred model in the frontmatter — you don't need to switch manually.
+
+---
+
 ## MCP Servers
 
 Pre-configured servers in `claude/.mcp.json`:
