@@ -286,33 +286,107 @@ def _cosine_search(
 
 
 # ---------------------------------------------------------------------------
+# Dedup
+# ---------------------------------------------------------------------------
+
+DEDUP_REPLACE_THRESHOLD = 0.85
+DEDUP_MERGE_THRESHOLD = 0.70
+
+
+def _check_dedup(embedding: list[float], project: str) -> tuple[str, int | None, float]:
+    """Verifica se uma nova memoria duplica entradas existentes.
+
+    Returns:
+        ("replace", idx, score) — substitui entrada antiga (score > 0.85)
+        ("merge",   idx, score) — concatena ao texto antigo (0.70 < score <= 0.85)
+        ("new",     None, 0.0)  — cria nova entrada (score <= 0.70 ou indice vazio)
+    """
+    matches = _cosine_search(embedding, top_k=1, project=project)
+    if not matches:
+        return ("new", None, 0.0)
+
+    idx, score = matches[0]
+    if score > DEDUP_REPLACE_THRESHOLD:
+        return ("replace", idx, score)
+    if score > DEDUP_MERGE_THRESHOLD:
+        return ("merge", idx, score)
+    return ("new", None, 0.0)
+
+
+def _replace_entry(idx: int, entry: dict, embedding: list[float]) -> None:
+    """Substitui entrada e vetor no indice mantendo a mesma posicao."""
+    import numpy as np
+
+    index = _load_index()
+    vectors_np = _load_vectors()
+
+    index["entries"][idx] = entry
+    vectors_np[idx] = np.array(embedding, dtype=np.float32)
+    _save_index(index, vectors_np)
+
+
+# ---------------------------------------------------------------------------
 # store
 # ---------------------------------------------------------------------------
 
 
-def store_memory(text: str, tags: str, project: str, quiet: bool = False) -> str:
-    """Armazena uma memoria no indice vetorial e como arquivo .md."""
-    mem_id = hashlib.sha256(
-        f"{text}{datetime.now(timezone.utc).isoformat()}".encode()
-    ).hexdigest()[:12]
+def store_memory(
+    text: str,
+    tags: str,
+    project: str,
+    quiet: bool = False,
+    dedup: bool = True,
+) -> str:
+    """Armazena uma memoria no indice vetorial e como arquivo .md.
 
+    Args:
+        text: conteudo da memoria.
+        tags: tags separadas por virgula.
+        project: nome do projeto.
+        quiet: suprime output amigavel.
+        dedup: se True (default), aplica dedup por similaridade cosseno.
+
+    Returns:
+        ID da memoria armazenada (12 chars hex).
+    """
     timestamp = datetime.now(timezone.utc).isoformat()
-
-    # Gera embedding
     embedding = get_embedding(text)
 
-    # Adiciona ao indice vetorial
+    # Dedup check (pode reutilizar entrada existente)
+    action, existing_idx, score = (
+        _check_dedup(embedding, project) if dedup else ("new", None, 0.0)
+    )
+
+    if action == "replace" and existing_idx is not None:
+        index = _load_index()
+        old_entry = index["entries"][existing_idx]
+        mem_id = old_entry["id"]
+        new_text = text
+    elif action == "merge" and existing_idx is not None:
+        index = _load_index()
+        old_entry = index["entries"][existing_idx]
+        mem_id = old_entry["id"]
+        new_text = f"{old_entry['text']}\n---\n{text}"
+        embedding = get_embedding(new_text)
+    else:
+        mem_id = hashlib.sha256(f"{text}{timestamp}".encode()).hexdigest()[:12]
+        new_text = text
+
     entry = {
         "id": mem_id,
-        "text": text[:500],
+        "text": new_text[:500],
         "project": project,
         "tags": tags,
         "timestamp": timestamp,
         "source": "memory_bridge",
     }
-    _append_to_index(entry, embedding)
 
-    # Persiste como arquivo markdown no repo de memoria
+    if action in ("replace", "merge") and existing_idx is not None:
+        _replace_entry(existing_idx, entry, embedding)
+    else:
+        _append_to_index(entry, embedding)
+
+    # Persiste como arquivo markdown (sobrescreve no caso de replace/merge)
     project_dir = MEMORY_DIR / "projects" / project
     project_dir.mkdir(parents=True, exist_ok=True)
 
@@ -324,14 +398,25 @@ def store_memory(text: str, tags: str, project: str, quiet: bool = False) -> str
         f"project: {project}\n"
         f"timestamp: {timestamp}\n"
         f"---\n\n"
-        f"{text}\n",
+        f"{new_text}\n",
         encoding="utf-8",
     )
 
     if not quiet:
         model_name, _ = _get_embedder()
-        print(f"✓ Memória armazenada: {mem_id} (embeddings: {model_name})")
-        log.info("Stored memory %s for project %s", mem_id, project)
+        if action == "replace":
+            print(
+                f"✓ Memória {mem_id} substituída (dedup score {score:.2f}, "
+                f"embeddings: {model_name})"
+            )
+        elif action == "merge":
+            print(
+                f"✓ Memória {mem_id} mesclada (dedup score {score:.2f}, "
+                f"embeddings: {model_name})"
+            )
+        else:
+            print(f"✓ Memória armazenada: {mem_id} (embeddings: {model_name})")
+        log.info("Stored memory %s for project %s [%s]", mem_id, project, action)
 
     return mem_id
 
@@ -644,6 +729,13 @@ def main() -> None:
     p_store.add_argument("--tags", default="", help="Tags separadas por vírgula")
     p_store.add_argument("--project", default="global", help="Nome do projeto")
     p_store.add_argument("--quiet", action="store_true", help="Sem output")
+    p_store.add_argument(
+        "--no-dedup",
+        dest="dedup",
+        action="store_false",
+        help="Desabilita dedup por similaridade cosseno (default: ativado)",
+    )
+    p_store.set_defaults(dedup=True)
 
     # query
     p_query = subparsers.add_parser("query", help="Busca memórias similares")
@@ -675,7 +767,9 @@ def main() -> None:
         EMBEDDINGS_DIR.mkdir(parents=True, exist_ok=True)
 
     if args.command == "store":
-        store_memory(args.text, args.tags, args.project, quiet=args.quiet)
+        store_memory(
+            args.text, args.tags, args.project, quiet=args.quiet, dedup=args.dedup
+        )
     elif args.command == "query":
         query_memory(args.text, args.top_k, args.project, fmt=args.fmt)
     elif args.command == "rebuild":

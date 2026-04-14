@@ -104,6 +104,42 @@ def test_rebuild_incremental(tmp_memory):
     assert len(results) >= 1, "memória indexada deveria ser buscável"
 
 
+def test_dedup_replaces_similar_memory(tmp_memory):
+    """Memorias quase identicas devem ser substituidas, nao duplicadas."""
+    text_a = "GED uses JWT authentication with refresh tokens for the API"
+    text_b = "GED uses JWT authentication with refresh tokens for the API endpoint"
+
+    id_a = memory_bridge.store_memory(
+        text=text_a, tags="auth", project="dedup-test", quiet=True
+    )
+    id_b = memory_bridge.store_memory(
+        text=text_b, tags="auth", project="dedup-test", quiet=True
+    )
+
+    # Mesmo ID = entrada substituida (nao duplicada)
+    assert id_a == id_b, "memorias quase identicas devem retornar o mesmo ID"
+
+    # Indice deve ter apenas 1 entrada para o projeto
+    results = memory_bridge.query_memory(
+        text="JWT authentication", top_k=10, project="dedup-test", fmt="json"
+    )
+    assert len(results) == 1, "indice nao deveria ter duplicatas"
+
+
+def test_no_dedup_flag_creates_new_entry(tmp_memory):
+    """Com dedup=False, memorias similares criam entradas separadas."""
+    text = "API uses JWT auth with refresh tokens"
+
+    id_a = memory_bridge.store_memory(
+        text=text, tags="auth", project="no-dedup-test", quiet=True, dedup=False
+    )
+    id_b = memory_bridge.store_memory(
+        text=text, tags="auth", project="no-dedup-test", quiet=True, dedup=False
+    )
+
+    assert id_a != id_b, "com dedup=False, IDs devem ser diferentes"
+
+
 def test_status_returns_count(tmp_memory, capsys):
     memory_bridge.store_memory(
         text="Test memory for status",
